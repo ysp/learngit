@@ -1,0 +1,250 @@
+﻿<Page
+    x:Class="GISApp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GISApp"
+    xmlns:esri="using:Esri.ArcGISRuntime.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Loaded="Page_Loaded">
+
+    <Page.Resources>
+        <!--http://www.fontawesome.com.cn/cheatsheet/-->
+        <FontFamily x:Key="FontAwesome">/Assets/FontAwesome.otf#FontAwesome</FontFamily>
+        <local:LayerControlCollection x:Key="layercontrols"/>
+        <DataTemplate x:Key="LayerControlItem">
+            <Grid Height="70"  BorderThickness="1,1,1,1" Padding="10,10,10,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="80"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" ></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                </Grid>
+                <TextBlock HorizontalAlignment="Stretch" Text="{Binding LayerName,Mode=TwoWay}" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,0,0,20"/>
+                <Slider HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Grid.Row="1" Margin="0,15,0,0" Maximum="1" Value="{Binding Opacity,Mode=TwoWay}" LargeChange="0.1" SmallChange="0.01" StepFrequency="0.01" TickPlacement="None" IsDirectionReversed="True" IsThumbToolTipEnabled="False"/>
+                <ToggleSwitch OffContent="" OnContent="" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" HorizontalContentAlignment="Center" Visibility="Visible" Margin="0,0,-120,0" IsOn="{Binding IsVisible,Mode=TwoWay}"/>
+            </Grid>
+        </DataTemplate>
+        <Style x:Key="circleButtonStyle"
+              TargetType="Button">
+            <Setter Property="Background"
+          Value="{ThemeResource ButtonBackground}" />
+            <Setter Property="Foreground"
+          Value="{ThemeResource ButtonForeground}" />
+            <Setter Property="BorderBrush"
+          Value="{ThemeResource ButtonBorderBrush}" />
+            <Setter Property="BorderThickness"
+          Value="{ThemeResource ButtonBorderThemeThickness}" />
+            <Setter Property="Padding"
+          Value="8,4,8,4" />
+            <Setter Property="HorizontalAlignment"
+          Value="Left" />
+            <Setter Property="VerticalAlignment"
+          Value="Center" />
+            <Setter Property="FontFamily"
+          Value="{ThemeResource ContentControlThemeFontFamily}" />
+            <Setter Property="FontWeight"
+          Value="Normal" />
+            <Setter Property="FontSize"
+          Value="{ThemeResource ControlContentThemeFontSize}" />
+            <Setter Property="UseSystemFocusVisuals"
+          Value="True" />
+            <Setter Property="FocusVisualMargin"
+          Value="-3" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid"
+              Background="{TemplateBinding Background}"
+              CornerRadius="100,100,100,100">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                 Storyboard.TargetName="RootGrid">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonBackgroundPointerOver}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                 Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonBorderBrushPointerOver}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                                 Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonForegroundPointerOver}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                 Storyboard.TargetName="RootGrid">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonBackgroundPressed}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                 Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonBorderBrushPressed}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                                 Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonForegroundPressed}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
+                                                 Storyboard.TargetName="RootGrid">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonBackgroundDisabled}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush"
+                                                 Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonBorderBrushDisabled}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
+                                                 Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                            Value="{ThemeResource ButtonForegroundDisabled}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <ContentPresenter x:Name="ContentPresenter"
+                            AutomationProperties.AccessibilityView="Raw"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTransitions="{TemplateBinding ContentTransitions}"
+                            Content="{TemplateBinding Content}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            Padding="{TemplateBinding Padding}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                            CornerRadius="100,100,100,100" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+    <Grid x:Name="MainGridLayout" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <RelativePanel HorizontalAlignment="Stretch" Height="60" VerticalAlignment="Top">
+            <Button x:Name="BtnBookmark" HorizontalAlignment="Left" Height="36" VerticalAlignment="Top" Width="85" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="40,10,5,5" Click="BtnBookmark_Click">
+                <Button.Flyout>
+                    <Flyout Placement="Bottom">
+                        <ListView x:Name="BookmarkList" MinWidth="180" MaxHeight="400" ItemClick="BookmarkList_ItemClick" IsItemClickEnabled="True"/>
+                    </Flyout>
+                </Button.Flyout>
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon FontFamily="{StaticResource FontAwesome}" Glyph="&#xf02c;"  Margin="0,0,10,0" />
+                    <TextBlock Text="书签" />
+                </StackPanel>
+            </Button>
+            <ToggleButton x:Name="BtnQuery" HorizontalAlignment="Left" Height="36" VerticalAlignment="Top" Width="85" RelativePanel.RightOf="BtnBookmark" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="5,10,5,5" Click="BtnQuery_Click">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon FontFamily="{StaticResource FontAwesome}" Glyph="&#xf05a;"  Margin="0,0,10,0" />
+                    <TextBlock Text="查询" />
+                </StackPanel>
+            </ToggleButton>
+            <Button x:Name="BtnMeasure" HorizontalAlignment="Left" Height="36" VerticalAlignment="Top" Width="85" RelativePanel.RightOf="BtnQuery" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="5,10,5,5">
+                <Button.Flyout>
+                    <MenuFlyout Placement="Bottom">
+                        <MenuFlyout.Items>
+                            <MenuFlyoutItem x:Name="MItemMesureLength" Text="长度测量" Click="MItemMesureLength_Click" />
+                            <MenuFlyoutItem x:Name="MItemMesureArea" Text="面积测量" Click="MItemMesureArea_Click"/>
+                        </MenuFlyout.Items>
+                    </MenuFlyout>
+                </Button.Flyout>
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon FontFamily="{StaticResource FontAwesome}" Glyph="&#xf1fe;"  Margin="0,0,10,0" />
+                    <TextBlock Text="测量" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="BtnAnalyse" HorizontalAlignment="Left" Height="36" VerticalAlignment="Top" Width="85" RelativePanel.RightOf="BtnMeasure" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="5,10,5,5" Click="BtnAnalyse_Click" IsEnabled="False">
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon FontFamily="{StaticResource FontAwesome}" Glyph="&#xf085;"  Margin="0,0,10,0" />
+                    <TextBlock Text="分析" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="BtnOutdoor" HorizontalAlignment="Left" Height="36" VerticalAlignment="Top" Width="85" RelativePanel.RightOf="BtnAnalyse" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="5,10,5,5" IsEnabled="False">
+                <Button.Flyout>
+                    <MenuFlyout Placement="Bottom">
+                        <MenuFlyout.Items>
+                            <MenuFlyoutItem Text="添加点" />
+                            <MenuFlyoutItem Text="添加地块" />
+                            <MenuFlyoutItem Text="查看记录" />
+                            <MenuFlyoutItem Text="删除记录" />
+                            <MenuFlyoutItem Text="导出记录" />
+                        </MenuFlyout.Items>
+                    </MenuFlyout>
+                </Button.Flyout>
+                <StackPanel Orientation="Horizontal">
+                    <FontIcon FontFamily="{StaticResource FontAwesome}" Glyph=" &#xf0f7;"  Margin="0,0,10,0" />
+                    <TextBlock Text="外业" />
+                </StackPanel>
+            </Button>
+            <AutoSuggestBox x:Name="BoxSearch" HorizontalAlignment="Left" VerticalAlignment="Top" Height="32" Width="255" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True"  Margin="0,0,30,0" PlaceholderText="兴趣点" TextChanged="BoxSearch_TextChanged" QueryIcon="Find" QuerySubmitted="BoxSearch_QuerySubmitted"/>
+        </RelativePanel>
+        <esri:MapView x:Name="MapControl" Map="{x:Bind Mode=OneWay, Path=ViewModel.Map}" Grid.Row="1" />
+
+        <ScrollViewer x:Name="PanelLayertree" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="280" Grid.Row="1" Background="#CCF0F0F0" Visibility="{Binding LayerTreeVisible,Mode=TwoWay}">
+            <ItemsControl VerticalAlignment="Stretch" ItemsSource="{Binding MyLayerControls}" ItemTemplate="{StaticResource LayerControlItem}" Margin="20,0,20,0"/>
+        </ScrollViewer>
+        <ScrollViewer x:Name="PanelInfoRight" Grid.Row="1" Grid.Column="2" Width="250" Background="#CCF0F0F0" HorizontalAlignment="Right" Visibility="{Binding PanelInfoVisible,Mode=TwoWay}">
+            <Frame x:Name="frameInfoRight" Content="Frame"/>
+        </ScrollViewer>
+
+        <RelativePanel HorizontalAlignment="Stretch" Height="60" VerticalAlignment="Bottom" Grid.Row="2">
+            <Button x:Name="BtnLayertree" HorizontalAlignment="Left" Height="45" VerticalAlignment="Top" Width="45" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignLeftWithPanel="True" Margin="50,2,2,2" RelativePanel.AlignRightWith="" Click="BtnLayertree_Click"  ToolTipService.ToolTip="图层列表">
+                <FontIcon FontFamily="{StaticResource FontAwesome}" Glyph="&#xf0c9;"/>
+            </Button>
+            <Button x:Name="BtnClear" Style="{StaticResource circleButtonStyle}" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="42" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignLeftWith="" Margin="5,2,5,2" RelativePanel.LeftOf="BtnLocate" Click="BtnClear_Click" ToolTipService.ToolTip="清除">
+                <SymbolIcon Symbol="Refresh"/>
+            </Button>
+            <Button x:Name="BtnLocate" Style="{StaticResource circleButtonStyle}" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="42" Margin="5,2,5,2" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignLeftWith="" RelativePanel.LeftOf="BtnFullmap" Click="BtnLocate_Click" ToolTipService.ToolTip="定位">
+                <SymbolIcon Symbol="Target"/>
+            </Button>
+            <Button x:Name="BtnFullmap" Style="{StaticResource circleButtonStyle}" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="42" Margin="5,2,5,2" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignLeftWith="" RelativePanel.LeftOf="BtnConfig" Click="BtnFullmap_Click" ToolTipService.ToolTip="全图">
+                <SymbolIcon Symbol="Globe"/>
+            </Button>
+            <Button x:Name="BtnConfig" Style="{StaticResource circleButtonStyle}" HorizontalAlignment="Left" Height="42" VerticalAlignment="Stretch" Width="42" Margin="5,2,5,2" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignLeftWith="" RelativePanel.LeftOf="BtnQuit" Click="BtnConfig_Click" ToolTipService.ToolTip="设置">
+                <SymbolIcon Symbol="Setting"/>
+            </Button>
+            <Button x:Name="BtnQuit" Style="{StaticResource circleButtonStyle}" HorizontalAlignment="Left" Height="42" VerticalAlignment="Top" Width="42" RelativePanel.AlignVerticalCenterWithPanel="True" RelativePanel.AlignRightWithPanel="True" Margin="5,2,30,2" DoubleTapped="BtnQuit_DoubleTapped" ToolTipService.ToolTip="双击退出">
+                <FontIcon FontFamily="{StaticResource FontAwesome}" Glyph="&#xf011;"/>
+            </Button>
+        </RelativePanel>
+    </Grid>
+</Page>

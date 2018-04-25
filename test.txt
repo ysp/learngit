@@ -1,3 +1,0 @@
-%USERPROFILE%\AppData\Local\Packages\LJNewMap.XiangshanOneMap_6asnegphaz85g\LocalState
-
-add-appxpackage C:\sina5.2.3.0.appxbundle 
